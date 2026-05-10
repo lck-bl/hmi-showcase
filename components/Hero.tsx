@@ -131,6 +131,13 @@ export default function Hero() {
               badge="自适应组-老手"
               imageSrc="/images/hmi/normal-expert.png"
               imageAlt="常态平静自适应组老手 HMI 界面"
+              comparison={{
+                imageSrc: "/images/hmi/normal-control.png",
+                imageAlt: "常态平静对照组 HMI 界面",
+                leftLabel: "对照组界面",
+                rightLabel: "自适应界面",
+                initialPosition: 0,
+              }}
             />
             <div className="mt-4 grid grid-cols-3 gap-3 text-center text-xs text-slate-400">
               {["静态特质", "动态情绪", "HMI 响应"].map((item) => (

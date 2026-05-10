@@ -12,7 +12,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
 
 export type HmiMode = "commute" | "visibility" | "distraction" | "calm";
 
@@ -23,6 +23,13 @@ type HmiScreenMockupProps = {
   imageSrc?: string;
   imageAlt?: string;
   badge?: string;
+  comparison?: {
+    imageSrc: string;
+    imageAlt?: string;
+    leftLabel?: string;
+    rightLabel?: string;
+    initialPosition?: number;
+  };
 };
 
 const modeConfig = {
@@ -92,11 +99,142 @@ export default function HmiScreenMockup({
   imageSrc,
   imageAlt,
   badge,
+  comparison,
 }: HmiScreenMockupProps) {
   const config = modeConfig[mode];
   const Icon = config.Icon;
+  const initialComparisonPosition = comparison?.initialPosition ?? 0;
   const [failedImageSrc, setFailedImageSrc] = useState<string | null>(null);
+  const [comparisonPosition, setComparisonPosition] = useState(initialComparisonPosition);
+  const [isComparisonHovered, setIsComparisonHovered] = useState(false);
+  const [isAutoSweeping, setIsAutoSweeping] = useState(false);
+  const comparisonPositionRef = useRef(initialComparisonPosition);
+  const isComparisonHoveredRef = useRef(false);
+  const autoFrameRef = useRef<number | null>(null);
+  const autoTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const imageReady = Boolean(imageSrc && failedImageSrc !== imageSrc);
+  const comparisonReady = Boolean(comparison?.imageSrc && failedImageSrc !== comparison.imageSrc);
+  const activeComparisonSide = comparisonReady && comparisonPosition > 50 ? "right" : "left";
+  const comparisonBlend = comparisonReady ? comparisonPosition / 100 : 1;
+  const comparisonShineOpacity =
+    0.72 * Math.min(1, comparisonPosition / 12, (100 - comparisonPosition) / 12);
+  const hideComparisonShine =
+    !isComparisonHovered && !isAutoSweeping && (comparisonPosition <= 5 || comparisonPosition >= 95);
+  const comparisonLeftLabel = comparison?.leftLabel ?? badge ?? "自适应界面";
+  const comparisonRightLabel = comparison?.rightLabel ?? "对照组界面";
+
+  const setBoundedComparisonPosition = useCallback((nextPosition: number) => {
+    const boundedPosition = Math.min(100, Math.max(0, nextPosition));
+    comparisonPositionRef.current = boundedPosition;
+    setComparisonPosition(boundedPosition);
+  }, []);
+
+  const stopAutoSweep = useCallback(() => {
+    if (autoFrameRef.current !== null) {
+      cancelAnimationFrame(autoFrameRef.current);
+      autoFrameRef.current = null;
+    }
+
+    if (autoTimeoutRef.current !== null) {
+      clearTimeout(autoTimeoutRef.current);
+      autoTimeoutRef.current = null;
+    }
+
+    setIsAutoSweeping(false);
+  }, []);
+
+  const runAutoSweep = useCallback(() => {
+    if (!comparisonReady || isComparisonHoveredRef.current) {
+      setIsAutoSweeping(false);
+      return;
+    }
+
+    const easeInOut = (progress: number) => 0.5 - Math.cos(progress * Math.PI) / 2;
+
+    const animateTo = (targetPosition: number) => {
+      if (isComparisonHoveredRef.current) {
+        setIsAutoSweeping(false);
+        return;
+      }
+
+      const startPosition = comparisonPositionRef.current;
+      const distance = Math.abs(targetPosition - startPosition);
+      const duration = Math.max(120, (distance / 100) * 1000);
+      const startTime = performance.now();
+
+      setIsAutoSweeping(true);
+
+      const step = (time: number) => {
+        if (isComparisonHoveredRef.current) {
+          setIsAutoSweeping(false);
+          autoFrameRef.current = null;
+          return;
+        }
+
+        const progress = Math.min(1, (time - startTime) / duration);
+        const easedProgress = easeInOut(progress);
+        setBoundedComparisonPosition(
+          startPosition + (targetPosition - startPosition) * easedProgress,
+        );
+
+        if (progress < 1) {
+          autoFrameRef.current = requestAnimationFrame(step);
+          return;
+        }
+
+        autoFrameRef.current = null;
+        setIsAutoSweeping(false);
+        autoTimeoutRef.current = setTimeout(() => {
+          animateTo(targetPosition === 100 ? 0 : 100);
+        }, 500);
+      };
+
+      autoFrameRef.current = requestAnimationFrame(step);
+    };
+
+    animateTo(comparisonPositionRef.current >= 95 ? 0 : 100);
+  }, [comparisonReady, setBoundedComparisonPosition]);
+
+  function handleComparisonMove(event: PointerEvent<HTMLDivElement>) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const nextPosition = ((event.clientX - rect.left) / rect.width) * 100;
+    setBoundedComparisonPosition(nextPosition);
+  }
+
+  function handleComparisonEnter() {
+    isComparisonHoveredRef.current = true;
+    setIsComparisonHovered(true);
+    stopAutoSweep();
+  }
+
+  function handleComparisonLeave() {
+    isComparisonHoveredRef.current = false;
+    setIsComparisonHovered(false);
+    stopAutoSweep();
+    autoTimeoutRef.current = setTimeout(() => {
+      if (!isComparisonHoveredRef.current) {
+        runAutoSweep();
+      }
+    }, 2000);
+  }
+
+  useEffect(() => {
+    if (!comparisonReady) {
+      return;
+    }
+
+    runAutoSweep();
+
+    return () => {
+      if (autoFrameRef.current !== null) {
+        cancelAnimationFrame(autoFrameRef.current);
+      }
+
+      if (autoTimeoutRef.current !== null) {
+        clearTimeout(autoTimeoutRef.current);
+      }
+    };
+  }, [comparisonReady, runAutoSweep]);
 
   return (
     <motion.div
@@ -132,8 +270,61 @@ export default function HmiScreenMockup({
                   unoptimized
                   onError={() => setFailedImageSrc(imageSrc ?? null)}
                 />
+                {comparison && comparisonReady && (
+                  <Image
+                    src={comparison.imageSrc}
+                    alt={comparison.imageAlt ?? `${label ?? config.title} 对照组 HMI 界面`}
+                    fill
+                    sizes="(min-width: 1024px) 720px, 100vw"
+                    className="object-cover object-center"
+                    style={{ opacity: 1 - comparisonBlend }}
+                    priority={false}
+                    unoptimized
+                    onError={() => setFailedImageSrc(comparison.imageSrc)}
+                  />
+                )}
                 <div className="pointer-events-none absolute inset-0 rounded-[12px] ring-1 ring-inset ring-cyan-100/10" />
-                <div className="screen-glass-shine pointer-events-none absolute inset-0" />
+                {comparison && comparisonReady ? (
+                  <div
+                    className="absolute inset-0 cursor-ew-resize"
+                    aria-label={`${comparisonLeftLabel} 与 ${comparisonRightLabel} 对比`}
+                    onPointerEnter={handleComparisonEnter}
+                    onPointerMove={handleComparisonMove}
+                    onPointerLeave={handleComparisonLeave}
+                  >
+                    {!hideComparisonShine && (
+                      <div
+                        className="screen-glass-shine screen-glass-shine--interactive pointer-events-none absolute inset-y-0 w-24"
+                        style={{
+                          left: `${comparisonPosition}%`,
+                          opacity: comparisonShineOpacity,
+                        }}
+                      />
+                    )}
+                    <div className="pointer-events-none absolute bottom-3 left-3 right-3 flex items-center justify-between text-[10px] font-medium">
+                      <span
+                        className={`rounded border px-2 py-1 backdrop-blur transition ${
+                          activeComparisonSide === "left"
+                            ? "border-cyan-300/40 bg-cyan-300/16 text-cyan-50"
+                            : "border-white/10 bg-black/30 text-slate-300"
+                        }`}
+                      >
+                        {comparisonLeftLabel}
+                      </span>
+                      <span
+                        className={`rounded border px-2 py-1 backdrop-blur transition ${
+                          activeComparisonSide === "right"
+                            ? "border-amber-300/35 bg-amber-300/14 text-amber-100"
+                            : "border-white/10 bg-black/30 text-slate-300"
+                        }`}
+                      >
+                        {comparisonRightLabel}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="screen-glass-shine pointer-events-none absolute inset-0" />
+                )}
               </>
             ) : (
               <div className="relative flex h-full flex-col justify-between">

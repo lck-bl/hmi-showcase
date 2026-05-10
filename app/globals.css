@@ -114,6 +114,16 @@ body {
   animation: shine-drift 8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
 
+.screen-glass-shine--interactive {
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(34, 211, 238, 0.08) 32%, rgba(255, 255, 255, 0.5) 49.5%, rgba(255, 255, 255, 0.92) 50%, rgba(255, 255, 255, 0.5) 50.5%, rgba(34, 211, 238, 0.08) 68%, transparent 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 36%, rgba(0, 0, 0, 0.18));
+  opacity: 0.72;
+  transform: translateX(-50%);
+  animation: none;
+  filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.38));
+}
+
 @keyframes shine-drift {
   0%,
   38% {
