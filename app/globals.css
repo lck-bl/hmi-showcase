@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+:root {
+  --background: #05070b;
+  --foreground: #f8fafc;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: Arial, "Microsoft YaHei", "PingFang SC", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 18% 8%, rgba(34, 211, 238, 0.13), transparent 28rem),
+    radial-gradient(circle at 82% 22%, rgba(16, 185, 129, 0.11), transparent 30rem),
+    linear-gradient(180deg, #05070b 0%, #071014 45%, #05070b 100%);
+  color: var(--foreground);
+  font-family: Arial, "Microsoft YaHei", "PingFang SC", sans-serif;
+}
+
+::selection {
+  background: rgba(34, 211, 238, 0.32);
+  color: #ffffff;
+}
+
+.glass-panel {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(18px);
+}
+
+.tech-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+.soft-glow {
+  position: relative;
+}
+
+.soft-glow::before {
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.28), rgba(16, 185, 129, 0.18), transparent);
+  content: "";
+  opacity: 0.45;
+  filter: blur(18px);
+}
