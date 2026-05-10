@@ -28,7 +28,7 @@ const mappingRows = [
 
 export default function AdaptiveStrategy() {
   return (
-    <MotionSection className="relative overflow-hidden border-b border-white/10 bg-[linear-gradient(180deg,#071014,#081116)] px-6 py-24 lg:px-10">
+    <MotionSection className="relative overflow-hidden px-6 py-24 lg:px-10">
       <div className="pointer-events-none absolute inset-0 tech-grid opacity-25" />
       <div className="pointer-events-none absolute right-[-5rem] bottom-10 h-80 w-80 rounded-full bg-cyan-300/10 blur-3xl" />
       <div className="mx-auto max-w-7xl">

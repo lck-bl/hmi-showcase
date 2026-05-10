@@ -59,7 +59,7 @@ export default function ExperimentValidation() {
   }, []);
 
   return (
-    <MotionSection className="relative overflow-hidden border-b border-white/10 bg-[#05070b] px-6 py-24 lg:px-10">
+    <MotionSection id="validation" className="relative overflow-hidden px-6 py-24 lg:px-10">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_25%,rgba(34,211,238,0.11),transparent_30rem),radial-gradient(circle_at_88%_74%,rgba(16,185,129,0.1),transparent_28rem)]" />
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
         <div>

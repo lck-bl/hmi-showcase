@@ -101,16 +101,19 @@ export default function HmiScreenMockup({
   return (
     <motion.div
       className="soft-glow relative"
-      initial={{ opacity: 0, y: 18, scale: 0.98 }}
+      initial={false}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      whileHover={{ scale: 1.012 }}
       viewport={{ once: true, amount: 0.35 }}
-      transition={{ duration: 0.7, ease: "easeOut" }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
     >
       <div className="absolute inset-x-10 -bottom-4 h-8 rounded-full bg-cyan-300/12 blur-xl" />
-      <div className="aspect-[1280/770] rounded-[22px] border border-cyan-100/15 bg-[linear-gradient(135deg,rgba(8,13,18,0.95),rgba(0,0,0,0.86))] p-2 shadow-[0_28px_100px_rgba(0,0,0,0.42),0_0_54px_rgba(34,211,238,0.12)]">
-        <div className="h-full rounded-[17px] border border-white/10 bg-slate-950 p-2">
+      <div className="rounded-[22px] border border-cyan-100/15 bg-[linear-gradient(135deg,rgba(8,13,18,0.95),rgba(0,0,0,0.86))] p-2 shadow-[0_28px_100px_rgba(0,0,0,0.42),0_0_54px_rgba(34,211,238,0.12)]">
+        <div className="aspect-[1280/770] overflow-hidden rounded-[17px] border border-white/10 bg-slate-950">
           <div
-            className={`relative h-full overflow-hidden rounded-[12px] border border-cyan-100/12 bg-gradient-to-br ${config.gradient} p-4`}
+            className={`relative h-full overflow-hidden rounded-[15px] border border-cyan-100/12 bg-gradient-to-br ${config.gradient} ${
+              imageReady ? "" : "p-4"
+            }`}
           >
             <div className="absolute inset-0 tech-grid opacity-35" />
             <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-cyan-200/10 to-transparent" />
@@ -124,16 +127,13 @@ export default function HmiScreenMockup({
                   alt={imageAlt ?? `${label ?? config.title} HMI 界面`}
                   fill
                   sizes="(min-width: 1024px) 720px, 100vw"
-                  className="object-contain"
+                  className="object-cover object-center"
                   priority={false}
                   unoptimized
                   onError={() => setFailedImageSrc(imageSrc ?? null)}
                 />
                 <div className="pointer-events-none absolute inset-0 rounded-[12px] ring-1 ring-inset ring-cyan-100/10" />
-                <div className="pointer-events-none absolute left-4 top-4 rounded border border-white/10 bg-black/45 px-3 py-2 text-xs text-slate-200 backdrop-blur">
-                  <span className="font-semibold text-white">{label ?? config.title}</span>
-                  {badge ? <span className="ml-2 text-cyan-100">{badge}</span> : null}
-                </div>
+                <div className="screen-glass-shine pointer-events-none absolute inset-0" />
               </>
             ) : (
               <div className="relative flex h-full flex-col justify-between">

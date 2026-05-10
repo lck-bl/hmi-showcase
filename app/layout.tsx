@@ -13,8 +13,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className="h-full antialiased">
-      <body className="min-h-full">{children}</body>
+    <html
+      lang="zh-CN"
+      className="h-full antialiased"
+      style={{ backgroundColor: "#05070b", colorScheme: "dark" }}
+    >
+      <head>
+        <link rel="stylesheet" href="/fallback.css" />
+      </head>
+      <body
+        className="min-h-full"
+        style={{
+          minHeight: "100%",
+          margin: 0,
+          backgroundColor: "#05070b",
+          color: "#f8fafc",
+        }}
+      >
+        {children}
+      </body>
     </html>
   );
 }

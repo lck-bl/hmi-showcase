@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import HmiScreenMockup, { type HmiMode } from "./HmiScreenMockup";
 import MotionSection from "./MotionSection";
@@ -131,7 +132,7 @@ export default function ScenarioMapping() {
   return (
     <MotionSection
       id="scenarios"
-      className="relative overflow-hidden border-b border-white/10 bg-[#05070b] px-6 py-24 lg:px-10"
+      className="relative overflow-hidden px-6 py-24 lg:px-10"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_82%_18%,rgba(34,211,238,0.12),transparent_30rem),radial-gradient(circle_at_18%_72%,rgba(16,185,129,0.1),transparent_28rem)]" />
       <div className="mx-auto max-w-7xl">
@@ -144,7 +145,7 @@ export default function ScenarioMapping() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[0.76fr_1.24fr]">
-          <div className="grid gap-3 self-start">
+          <div className="grid gap-3 self-start lg:sticky lg:top-20">
             {scenarios.map((scenario, index) => (
               <button
                 key={scenario.name}
@@ -166,7 +167,11 @@ export default function ScenarioMapping() {
             ))}
           </div>
 
-          <div className="glass-panel rounded-lg p-5 md:p-6">
+          <motion.div
+            className="glass-panel rounded-lg p-5 md:p-6"
+            layout
+            transition={{ layout: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } }}
+          >
             <div className="mb-5 flex flex-wrap gap-2">
               {groupOrder.map((key) => {
                 const item = active.interfaces[key];
@@ -188,14 +193,24 @@ export default function ScenarioMapping() {
               })}
             </div>
 
-            <HmiScreenMockup
-              mode={active.mode}
-              compact
-              label={active.name}
-              badge={activeInterface.label}
-              imageSrc={activeInterface.image}
-              imageAlt={`${active.name} ${activeInterface.label} HMI 界面`}
-            />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${active.name}-${activeInterface.label}`}
+                initial={{ opacity: 0, y: 26, scale: 0.975, filter: "blur(12px)" }}
+                animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -18, scale: 0.985, filter: "blur(10px)" }}
+                transition={{ duration: 0.48, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <HmiScreenMockup
+                  mode={active.mode}
+                  compact
+                  label={active.name}
+                  badge={activeInterface.label}
+                  imageSrc={activeInterface.image}
+                  imageAlt={`${active.name} ${activeInterface.label} HMI 界面`}
+                />
+              </motion.div>
+            </AnimatePresence>
 
             <div className="mt-6 grid gap-4 md:grid-cols-[0.9fr_1.1fr]">
               <div className="rounded border border-white/10 bg-white/[0.04] p-4">
@@ -212,7 +227,7 @@ export default function ScenarioMapping() {
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </MotionSection>

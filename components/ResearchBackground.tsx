@@ -21,7 +21,7 @@ const backgroundItems = [
 
 export default function ResearchBackground() {
   return (
-    <MotionSection className="relative overflow-hidden border-b border-white/10 bg-[linear-gradient(180deg,rgba(7,16,20,0.96),rgba(5,7,11,0.98))] px-6 py-24 lg:px-10">
+    <MotionSection id="research" className="relative overflow-hidden px-6 py-24 lg:px-10">
       <div className="pointer-events-none absolute inset-0 tech-grid opacity-30" />
       <div className="pointer-events-none absolute right-0 top-10 h-72 w-72 rounded-full bg-cyan-300/10 blur-3xl" />
       <div className="mx-auto max-w-7xl">

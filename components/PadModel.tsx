@@ -4,7 +4,7 @@ const dimensions = [
   {
     key: "P",
     title: "Pleasure 愉悦度",
-    desc: "描述驾驶员对当前环境和交互体验的正负感受。拥堵与危险提示会拉低愉悦度，清晰反馈和舒适节奏可以修复体验。",
+    desc: "描述驾驶员对环境与交互的正负感受。清晰反馈和舒适节奏可提升愉悦体验，缓和压力感。",
     low: "焦虑 / 厌烦",
     high: "轻松 / 满意",
     color: "bg-cyan-300",
@@ -29,7 +29,7 @@ const dimensions = [
 
 export default function PadModel() {
   return (
-    <MotionSection className="relative overflow-hidden border-b border-white/10 bg-[#05070b] px-6 py-24 lg:px-10">
+    <MotionSection id="pad-model" className="relative overflow-hidden px-6 py-24 lg:px-10">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,rgba(34,211,238,0.11),transparent_30rem),radial-gradient(circle_at_78%_70%,rgba(16,185,129,0.1),transparent_28rem)]" />
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
         <div>

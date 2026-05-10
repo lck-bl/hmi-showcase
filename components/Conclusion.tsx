@@ -4,7 +4,7 @@ const outcomes = ["理论可解释", "画像可推导", "场景可落地", "结�
 
 export default function Conclusion() {
   return (
-    <MotionSection className="relative overflow-hidden bg-[#05070b] px-6 py-24 lg:px-10">
+    <MotionSection className="relative overflow-hidden px-6 py-24 lg:px-10">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(34,211,238,0.12),transparent_34rem)]" />
       <div className="mx-auto max-w-7xl">
         <div className="glass-panel rounded-lg p-8 md:p-10">

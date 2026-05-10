@@ -40,18 +40,15 @@ const screens: {
 
 export default function DesignOutput() {
   return (
-    <MotionSection className="relative overflow-hidden border-b border-white/10 bg-[linear-gradient(180deg,#081116,#05070b)] px-6 py-24 lg:px-10">
+    <MotionSection id="design-output" className="relative overflow-hidden px-6 py-24 lg:px-10">
       <div className="pointer-events-none absolute inset-0 tech-grid opacity-25" />
       <div className="pointer-events-none absolute left-1/2 top-16 h-96 w-96 -translate-x-1/2 rounded-full bg-cyan-300/10 blur-3xl" />
       <div className="mx-auto max-w-7xl">
         <div className="mb-12 max-w-3xl">
           <p className="mb-3 text-sm font-medium text-emerald-200">07 Design Output</p>
           <h2 className="text-3xl font-semibold text-white md:text-5xl">
-            1280×770 HMI 设计稿展示
+            设计界面展示
           </h2>
-          <p className="mt-5 text-base leading-8 text-slate-300">
-            设计输出统一使用 1280×770 车机界面比例展示。图片从 public/images/hmi 读取，若对应图片暂未放入目录，页面会自动显示科技感占位框，保证答辩页面结构稳定。
-          </p>
         </div>
 
         <div className="grid gap-7 lg:grid-cols-2">
@@ -69,9 +66,6 @@ export default function DesignOutput() {
                   <h3 className="text-lg font-semibold text-white">{screen.title}</h3>
                   <p className="mt-2 text-sm text-slate-400">{screen.point}</p>
                 </div>
-                <span className="rounded border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-slate-300">
-                  aspect-[1280/770]
-                </span>
               </div>
             </article>
           ))}
