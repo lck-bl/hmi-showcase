@@ -11,7 +11,6 @@ import {
   Route,
   Sparkles,
 } from "lucide-react";
-import { motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
 
 export type HmiMode = "commute" | "visibility" | "distraction" | "calm";
@@ -23,6 +22,7 @@ type HmiScreenMockupProps = {
   imageSrc?: string;
   imageAlt?: string;
   badge?: string;
+  showShine?: boolean;
   comparison?: {
     imageSrc: string;
     imageAlt?: string;
@@ -99,6 +99,7 @@ export default function HmiScreenMockup({
   imageSrc,
   imageAlt,
   badge,
+  showShine = true,
   comparison,
 }: HmiScreenMockupProps) {
   const config = modeConfig[mode];
@@ -110,6 +111,7 @@ export default function HmiScreenMockup({
   const [isAutoSweeping, setIsAutoSweeping] = useState(false);
   const comparisonPositionRef = useRef(initialComparisonPosition);
   const isComparisonHoveredRef = useRef(false);
+  const isComparisonDraggingRef = useRef(false);
   const autoFrameRef = useRef<number | null>(null);
   const autoTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const imageReady = Boolean(imageSrc && failedImageSrc !== imageSrc);
@@ -196,9 +198,29 @@ export default function HmiScreenMockup({
   }, [comparisonReady, setBoundedComparisonPosition]);
 
   function handleComparisonMove(event: PointerEvent<HTMLDivElement>) {
+    if (!isComparisonHoveredRef.current && !isComparisonDraggingRef.current) {
+      return;
+    }
+
     const rect = event.currentTarget.getBoundingClientRect();
     const nextPosition = ((event.clientX - rect.left) / rect.width) * 100;
     setBoundedComparisonPosition(nextPosition);
+  }
+
+  function handleComparisonDown(event: PointerEvent<HTMLDivElement>) {
+    isComparisonDraggingRef.current = true;
+    isComparisonHoveredRef.current = true;
+    setIsComparisonHovered(true);
+    stopAutoSweep();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    handleComparisonMove(event);
+  }
+
+  function handleComparisonUp(event: PointerEvent<HTMLDivElement>) {
+    isComparisonDraggingRef.current = false;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
   }
 
   function handleComparisonEnter() {
@@ -208,6 +230,10 @@ export default function HmiScreenMockup({
   }
 
   function handleComparisonLeave() {
+    if (isComparisonDraggingRef.current) {
+      return;
+    }
+
     isComparisonHoveredRef.current = false;
     setIsComparisonHovered(false);
     stopAutoSweep();
@@ -237,14 +263,7 @@ export default function HmiScreenMockup({
   }, [comparisonReady, runAutoSweep]);
 
   return (
-    <motion.div
-      className="soft-glow relative"
-      initial={false}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      whileHover={{ scale: 1.012 }}
-      viewport={{ once: true, amount: 0.35 }}
-      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-    >
+    <div className="soft-glow relative">
       <div className="absolute inset-x-10 -bottom-4 h-8 rounded-full bg-cyan-300/12 blur-xl" />
       <div className="rounded-[22px] border border-cyan-100/15 bg-[linear-gradient(135deg,rgba(8,13,18,0.95),rgba(0,0,0,0.86))] p-2 shadow-[0_28px_100px_rgba(0,0,0,0.42),0_0_54px_rgba(34,211,238,0.12)]">
         <div className="aspect-[1280/770] overflow-hidden rounded-[17px] border border-white/10 bg-slate-950">
@@ -286,13 +305,16 @@ export default function HmiScreenMockup({
                 <div className="pointer-events-none absolute inset-0 rounded-[12px] ring-1 ring-inset ring-cyan-100/10" />
                 {comparison && comparisonReady ? (
                   <div
-                    className="absolute inset-0 cursor-ew-resize"
+                    className="absolute inset-0 cursor-ew-resize touch-none"
                     aria-label={`${comparisonLeftLabel} 与 ${comparisonRightLabel} 对比`}
+                    onPointerDown={handleComparisonDown}
                     onPointerEnter={handleComparisonEnter}
                     onPointerMove={handleComparisonMove}
+                    onPointerUp={handleComparisonUp}
+                    onPointerCancel={handleComparisonUp}
                     onPointerLeave={handleComparisonLeave}
                   >
-                    {!hideComparisonShine && (
+                    {showShine && !hideComparisonShine && (
                       <div
                         className="screen-glass-shine screen-glass-shine--interactive pointer-events-none absolute inset-y-0 w-24"
                         style={{
@@ -322,9 +344,9 @@ export default function HmiScreenMockup({
                       </span>
                     </div>
                   </div>
-                ) : (
+                ) : showShine ? (
                   <div className="screen-glass-shine pointer-events-none absolute inset-0" />
-                )}
+                ) : null}
               </>
             ) : (
               <div className="relative flex h-full flex-col justify-between">
@@ -445,6 +467,6 @@ export default function HmiScreenMockup({
         className="mx-auto h-2 w-[72%] rounded-b-lg border-x border-b border-white/10 bg-black/50"
         aria-hidden="true"
       />
-    </motion.div>
+    </div>
   );
 }

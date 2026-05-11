@@ -1,8 +1,7 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowDown, Cpu, LineChart, ShieldCheck } from "lucide-react";
-import { useRef } from "react";
 import HmiScreenMockup from "./HmiScreenMockup";
 
 const navItems = [
@@ -23,22 +22,9 @@ const heroTagClass =
   "glass-panel rounded border border-white/10 bg-white/[0.045] text-slate-300 transition hover:border-cyan-300/55 hover:bg-cyan-300/10 hover:text-cyan-50";
 
 export default function Hero() {
-  const heroRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const headlineY = useTransform(scrollYProgress, [0, 1], [0, -92]);
-  const mediaY = useTransform(scrollYProgress, [0, 1], [0, 132]);
-  const mediaScale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
-  const glowOpacity = useTransform(scrollYProgress, [0, 0.72], [0.72, 0]);
-
   return (
-    <section ref={heroRef} className="relative min-h-screen overflow-hidden">
-      <motion.div
-        className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(34,211,238,0.18),transparent_28rem),radial-gradient(circle_at_86%_34%,rgba(16,185,129,0.14),transparent_26rem)]"
-        style={{ opacity: glowOpacity }}
-      />
+    <section className="relative min-h-screen overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(34,211,238,0.18),transparent_28rem),radial-gradient(circle_at_86%_34%,rgba(16,185,129,0.14),transparent_26rem)] opacity-70" />
       <div className="absolute inset-0 tech-grid opacity-60" />
       <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-[#05070b] to-transparent" />
 
@@ -57,9 +43,8 @@ export default function Hero() {
         <div className="grid flex-1 items-center gap-12 py-14 lg:grid-cols-[0.92fr_1.08fr]">
           <motion.div
             className="max-w-3xl"
-            style={{ y: headlineY }}
-            initial={{ opacity: 0, filter: "blur(12px)" }}
-            animate={{ opacity: 1, filter: "blur(0px)" }}
+            initial={{ y: 20 }}
+            animate={{ y: 0 }}
             transition={{ duration: 1.05, ease: [0.16, 1, 0.3, 1] }}
           >
             <p className="mb-5 inline-flex items-center gap-2 rounded border border-emerald-300/20 bg-emerald-300/10 px-3 py-1 text-sm font-medium text-emerald-100">
@@ -88,9 +73,11 @@ export default function Hero() {
                   href={item.href}
                   className={`${heroTagClass} block px-4 py-3`}
                   variants={{
-                    hidden: { opacity: 0, y: 20 },
-                    show: { opacity: 1, y: 0 },
+                    hidden: { y: 14 },
+                    show: { y: 0 },
                   }}
+                  whileHover={{ y: -3 }}
+                  whileTap={{ scale: 0.985 }}
                   transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                 >
                   <p className="text-xs text-slate-400">{item.label}</p>
@@ -119,9 +106,8 @@ export default function Hero() {
 
           <motion.div
             className="relative"
-            style={{ y: mediaY, scale: mediaScale }}
-            initial={{ opacity: 0, filter: "blur(14px)" }}
-            animate={{ opacity: 1, filter: "blur(0px)" }}
+            initial={{ y: 24 }}
+            animate={{ y: 0 }}
             transition={{ duration: 1.1, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
           >
             <div className="absolute -inset-6 rounded-full bg-cyan-300/10 blur-3xl" />

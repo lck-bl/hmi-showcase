@@ -1,7 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
 
 type MotionSectionProps = {
@@ -11,21 +10,8 @@ type MotionSectionProps = {
 };
 
 export default function MotionSection({ id, className, children }: MotionSectionProps) {
-  const sectionRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start 86%", "end 14%"],
-  });
-
-  const opacity = useTransform(scrollYProgress, [0, 0.18, 0.78, 1], [0, 1, 1, 0.72]);
-  const y = useTransform(scrollYProgress, [0, 0.22, 0.82, 1], [88, 0, 0, -44]);
-  const scale = useTransform(scrollYProgress, [0, 0.2, 0.78, 1], [0.965, 1, 1, 0.985]);
-  const filter = useTransform(
-    scrollYProgress,
-    [0, 0.22, 0.82, 1],
-    ["blur(18px)", "blur(0px)", "blur(0px)", "blur(10px)"],
-  );
+  const revealClassName = ["section-reveal", className].filter(Boolean).join(" ");
 
   if (prefersReducedMotion) {
     return (
@@ -37,10 +23,12 @@ export default function MotionSection({ id, className, children }: MotionSection
 
   return (
     <motion.section
-      ref={sectionRef}
       id={id}
-      className={className}
-      style={{ opacity, y, scale, filter }}
+      className={revealClassName}
+      initial={{ opacity: 0, y: 56, scale: 0.985, filter: "blur(14px)" }}
+      whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+      viewport={{ once: false, amount: 0.22, margin: "0px 0px -12% 0px" }}
+      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
     >
       {children}
     </motion.section>

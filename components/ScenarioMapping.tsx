@@ -126,6 +126,7 @@ const scenarios: Scenario[] = [
 export default function ScenarioMapping() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeGroup, setActiveGroup] = useState<GroupKey>("control");
+  const [hasChangedPreview, setHasChangedPreview] = useState(false);
   const active = scenarios[activeIndex];
   const activeInterface = active.interfaces[activeGroup];
 
@@ -138,7 +139,7 @@ export default function ScenarioMapping() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-12 max-w-3xl">
           <p className="mb-3 text-sm font-medium text-cyan-200">04 Scenario Mapping</p>
-          <h2 className="text-3xl font-semibold text-white md:text-5xl">实验对比界面展示</h2>
+          <h2 className="text-3xl font-semibold text-white md:text-5xl">实验界面</h2>
           <p className="mt-5 text-base leading-8 text-slate-300">
             先选择驾驶场景，再比较对照组与两类自适应组界面。对照组为固定界面；自适应组会根据驾驶员经验与自信水平采用差异化交互策略，用于呈现实验验证中的界面对比逻辑。
           </p>
@@ -151,8 +152,11 @@ export default function ScenarioMapping() {
                 key={scenario.name}
                 type="button"
                 aria-pressed={activeIndex === index}
-                onClick={() => setActiveIndex(index)}
-                className={`rounded-lg border p-5 text-left transition ${
+                onClick={() => {
+                  setHasChangedPreview(true);
+                  setActiveIndex(index);
+                }}
+                className={`rounded-lg border p-5 text-left transition hover:translate-x-1 active:scale-[0.985] ${
                   activeIndex === index
                     ? "border-cyan-300/70 bg-cyan-300/12 text-white shadow-[0_0_28px_rgba(34,211,238,0.12)]"
                     : "border-white/10 bg-white/[0.045] text-slate-300 backdrop-blur hover:border-white/25 hover:bg-white/[0.07]"
@@ -180,8 +184,11 @@ export default function ScenarioMapping() {
                     key={key}
                     type="button"
                     aria-pressed={activeGroup === key}
-                    onClick={() => setActiveGroup(key)}
-                    className={`rounded border px-4 py-2 text-sm font-medium transition ${
+                    onClick={() => {
+                      setHasChangedPreview(true);
+                      setActiveGroup(key);
+                    }}
+                    className={`rounded border px-4 py-2 text-sm font-medium transition hover:-translate-y-0.5 active:scale-[0.985] ${
                       activeGroup === key
                         ? "border-cyan-300/70 bg-cyan-300/14 text-cyan-50"
                         : "border-white/10 bg-white/[0.04] text-slate-300 hover:border-white/25"
@@ -196,9 +203,9 @@ export default function ScenarioMapping() {
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${active.name}-${activeInterface.label}`}
-                initial={{ opacity: 0, y: 26, scale: 0.975, filter: "blur(12px)" }}
-                animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -18, scale: 0.985, filter: "blur(10px)" }}
+                initial={hasChangedPreview ? { opacity: 0, y: 26, scale: 0.975 } : false}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -18, scale: 0.985 }}
                 transition={{ duration: 0.48, ease: [0.16, 1, 0.3, 1] }}
               >
                 <HmiScreenMockup
@@ -208,6 +215,7 @@ export default function ScenarioMapping() {
                   badge={activeInterface.label}
                   imageSrc={activeInterface.image}
                   imageAlt={`${active.name} ${activeInterface.label} HMI 界面`}
+                  showShine={false}
                 />
               </motion.div>
             </AnimatePresence>

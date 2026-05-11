@@ -1,4 +1,5 @@
 import MotionSection from "./MotionSection";
+import { BrainCircuit, PanelTop, ScanSearch, Target } from "lucide-react";
 
 const strategies = [
   {
@@ -20,10 +21,26 @@ const strategies = [
 ];
 
 const mappingRows = [
-  ["场景识别", "天气、路况、车速、交互行为"],
-  ["情绪推断", "PAD 维度变化与用户画像特质"],
-  ["需求判断", "安全确认、效率提升、注意力回收"],
-  ["界面响应", "层级、强度、主动性、反馈通道"],
+  {
+    title: "场景识别",
+    desc: "天气、路况、车速、交互行为",
+    Icon: ScanSearch,
+  },
+  {
+    title: "情绪推断",
+    desc: "PAD 维度变化与用户画像特质",
+    Icon: BrainCircuit,
+  },
+  {
+    title: "需求判断",
+    desc: "安全确认、效率提升、注意力回收",
+    Icon: Target,
+  },
+  {
+    title: "界面响应",
+    desc: "层级、强度、主动性、反馈通道",
+    Icon: PanelTop,
+  },
 ];
 
 export default function AdaptiveStrategy() {
@@ -46,15 +63,18 @@ export default function AdaptiveStrategy() {
           <div className="glass-panel rounded-lg p-6">
             <p className="text-sm font-semibold text-cyan-100">推导链路</p>
             <div className="mt-6 space-y-3">
-              {mappingRows.map((row, index) => (
+              {mappingRows.map(({ title, desc, Icon }, index) => (
                 <div
-                  key={row[0]}
-                  className="grid grid-cols-[86px_1fr] items-center gap-4 rounded border border-white/10 bg-white/[0.045] p-4 backdrop-blur"
+                  key={title}
+                  className="grid grid-cols-[24px_36px_1fr] items-center gap-4 rounded border border-white/10 bg-white/[0.045] p-4 backdrop-blur"
                 >
                   <span className="text-sm font-semibold text-white">0{index + 1}</span>
+                  <span className="flex h-9 w-9 items-center justify-center rounded border border-cyan-200/15 bg-cyan-300/10 text-cyan-100 shadow-[0_0_18px_rgba(103,232,249,0.12)]">
+                    <Icon className="h-4.5 w-4.5" strokeWidth={1.8} />
+                  </span>
                   <div>
-                    <p className="text-sm font-semibold text-cyan-100">{row[0]}</p>
-                    <p className="mt-1 text-sm text-slate-400">{row[1]}</p>
+                    <p className="text-sm font-semibold text-cyan-100">{title}</p>
+                    <p className="mt-1 text-sm text-slate-400">{desc}</p>
                   </div>
                 </div>
               ))}
