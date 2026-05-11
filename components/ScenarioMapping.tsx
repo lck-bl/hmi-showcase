@@ -164,9 +164,6 @@ export default function ScenarioMapping() {
               >
                 <span className="text-sm text-slate-400">0{index + 1}</span>
                 <span className="mt-2 block text-xl font-semibold">{scenario.name}</span>
-                <span className="mt-3 block text-xs text-slate-400">
-                  {scenario.pad.join(" / ")}
-                </span>
               </button>
             ))}
           </div>
